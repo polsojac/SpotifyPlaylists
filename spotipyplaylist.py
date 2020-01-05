@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-import webbrowser
 import spotipy
 
 import spotipy.util as util
@@ -17,7 +16,8 @@ scope = "playlist-modify-public user-library-read user-library-modify user-read-
     redirect_uri = f.readline()
 f.close()
 '''
-username = "spotify:user:12147979843"
+# my username = "spotify:user:12147979843"
+username = sys.argv[1]
 client_id = "1a0adb9a12784c23b25dbc8c96878cfc"
 client_secret = "14f8767d4fe34cc8b28c5a8fa8eaca98"
 redirect_uri = "https://localhost:8080"
@@ -59,35 +59,58 @@ for i in range(0,26):
             try:
                 artist_genre = artist['genres'][0]
             except:
-                artist_genre = "no genre found"
-    
+                artist_genre = 'no genre found'
+
+            if artist_genre == 'korean pop':
+                artist_genre = 'k-pop'
+            elif 'r&b' in artist_genre:
+                artist_genre = 'r&b'
+            elif 'edm' in artist_genre:
+                artist_genre = 'edm'
+            elif 'dubstep' in artist_genre:
+                artist_genre = 'dubstep'
+            elif 'hip-hop' in artist_genre:
+                artist_genre = 'hip-hop'
             # Determines the "energy" of the song/ does a vibe check to see
             # what kind of song it is, very basic 2 options now, very rudimentary
-            if valence > .4:
+            # Dropping this for now, too many genres
+            '''if valence > .4:
                 # valence above .4 ---> issa bop
                 if artist_genre == 'k-pop':
                     artist_genre = 'k-bop'
                 else:
                     artist_genre += " bop"
-            else:
+            #else:
                 # otherwise ---> ballad
-                artist_genre = artist_genre + " ballad"
+                artist_genre = artist_genre + ' ballad'
+            '''
             # Again this is very very basic and straightforward
             if artist_genre not in genre_dict:
-                genre_dict[artist_genre] = []
-            genre_dict[artist_genre].append(track['id'])
+                genre_dict[artist_genre] = set()
+            genre_dict[artist_genre].add(track['id'])
             if(track['id'] == '4fPBB44eDH71YohayI4eKV'):
                 print("last song")
 
     except Exception as e:
         #print(e)
-        print("-------------Your internet sucks----------------", file=testing_doc)
+        print("-------------Your internet sucks----------------")
         # Tries again with the same set of songs
         # We go agane
         #i -= 1
 print("All of your songs are now sorted by genre,")
 print("They will now be converted into playlists")
 for key in genre_dict.keys():
+
+    # Creates new playlist
     new_playlist = spotify.user_playlist_create(user=12147979843, name=key, public=True, description="Spotipy generated " + key + " playlist")
-    spotify.user_playlist_add_tracks(12147979843, new_playlist['uri'], genre_dict[key])
+    set_to_list = list(genre_dict[key])
+    # If more than 100 songs need to be added to the playlist
+    if len(genre_dict[key]) > 100:
+        num = int(len(genre_dict[key]) / 100)
+        for i in range(0, num + 1):
+            small_list = set_to_list[100*i: 100*(i+1)]
+            spotify.user_playlist_add_tracks(12147979843, new_playlist['uri'], small_list)
+
+    else:
+        spotify.user_playlist_add_tracks(12147979843, new_playlist['uri'], set_to_list)
 print("Your songs have now been added to playlists")
