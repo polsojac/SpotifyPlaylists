@@ -1,2 +1,2 @@
 # SpotifyPlaylists
-Grabs all Spotify songs from library and moves them into organized playlists depending on genre and "valence" value
+Grabs top 20 songs from Spotify (short term, medium term, long term) and genereates 20 playlists based on recommendations from those top songs
