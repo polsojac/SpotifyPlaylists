@@ -1,6 +1,6 @@
 # SpotifyPlaylists
 (Feature 1) 
-Grabs top 20 songs from Spotify (short term, medium term, long term) and genereates 20 playlists based on recommendations from those top songs
+Grabs 20 most recently added songs and generates 20 playlists based on recommendations from those songs
 (Feature 2) 
 Visualizes pie chart of your Spotify adds by week, month, or year sorted by genre (choose between the three)
 (Feature 3) 
